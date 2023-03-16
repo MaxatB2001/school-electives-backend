@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserType {
+  student
+  teacher
+}
+
+model User {
+  id          String            @id @default(uuid())
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  type        UserType
+  firstName   String
+  lastName    String
+  email       String
+  password    String
+  image       String?
+  class       Int?
+  classLetter String?
+  Course      Course[]
+  courses     StudentOnCourse[]
+  Grade       Grade[]
+}
+
+model Course {
+  id            String            @id @default(uuid())
+  name          String
+  startDate     DateTime
+  endDate       DateTime
+  time          DateTime          @db.Time(6)
+  students      StudentOnCourse[]
+  about         String?
+  image         String?
+  audience      String?
+  days          Int[]
+  classOriented Int[]
+  User          User?             @relation(fields: [userId], references: [id])
+  userId        String?
+  homework      HomeWork[]
+  Grade         Grade[]
+  materials     Materials[]
+}
+
+model StudentOnCourse {
+  student   User   @relation(fields: [studentId], references: [id])
+  studentId String // relation scalar field (used in the `@relation` attribute above)
+  course    Course @relation(fields: [courseId], references: [id])
+  courseId  String // relation scalar field (used in the `@relation` attribute above)
+
+  @@id([studentId, courseId])
+}
+
+model HomeWork {
+  id       String   @id @default(uuid())
+  body     String
+  date     DateTime
+  Course   Course?  @relation(fields: [courseId], references: [id])
+  courseId String?
+}
+
+model Grade {
+  id       String   @id @default(uuid())
+  grade    Int?     @default(0)
+  date     DateTime
+  user     User     @relation(fields: [userId], references: [id])
+  course   Course   @relation(fields: [courseId], references: [id])
+  courseId String
+  userId   String
+}
+
+model Materials {
+  id          String  @id @default(uuid())
+  name        String
+  materialurl String
+  Course      Course? @relation(fields: [courseId], references: [id])
+  courseId    String?
+}
