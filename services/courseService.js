@@ -3,17 +3,22 @@ const { getDaysArray } = require("../utils/date.js");
 
 class CourseService {
   async create(courseData, userId, image) {
-    return await prismaClient.course.create({
-      data: {
-        ...courseData,
-        days: JSON.parse(courseData.days),
-        userId,
-        image,
-        audience: courseData.audience,
-        classOriented: JSON.parse(courseData.classOriented),
-        time: new Date(courseData.time),
-      },
-    });
+    console.log(new Date(courseData.time));
+    try {
+      return await prismaClient.course.create({
+        data: {
+          ...courseData,
+          days: JSON.parse(courseData.days),
+          userId,
+          image,
+          audience: courseData.audience,
+          classOriented: JSON.parse(courseData.classOriented),
+          time: new Date(courseData.time)
+        },
+      });
+    } catch (error) {
+      console.log(error); 
+    }
   }
 
   async getCourses() {

@@ -3,6 +3,7 @@ const userService = require("../services/userService.js");
 
 class UserController {
   async registration(req, res, next) {
+    console.log(req.file.filename);
     try {
       const user = await userService.registration({
         ...req.body,

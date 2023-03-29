@@ -5,7 +5,9 @@ const tokenService = require("./tokenService.js");
 
 class UserService {
   async registration(userData) {
+    console.log(userData);
     const user = await this.createUser(userData);
+  
     const token = tokenService.generateAccessToken(user);
     return token;
   }
@@ -25,16 +27,21 @@ class UserService {
   }
 
   async createUser(userData) {
-    const { firstName, lastName, type, email, password } = userData;
-    const user = await prisma.user.create({
-      data: {
-        lastName,
-        firstName,
-        type,
-        email,
-        password,
-      },
-    });
+    let user
+    if (userData.type === "student") {
+      user =  await prisma.user.create({
+        data: {
+          ...userData,
+          class: Number(userData.class)
+        },
+      });
+    } else {
+      user =  await prisma.user.create({
+        data: {
+          ...userData,
+        },
+      });
+    }
     return user;
   }
 
